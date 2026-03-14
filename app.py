@@ -1,64 +1,44 @@
 import sys, os 
-from mosquito.utils.main_utils import decodeImage, encodeImageIntoBase64
 from flask import Flask, request, jsonify, render_template, Response
 from flask_cors import CORS, cross_origin 
+from mosquito.pipeline.predict import InferencePipeline
 
 app = Flask(__name__)
 CORS(app)
 
 class ClientApp:
     def __init__(self):
-        self.filename = "inputImage.jpg"
+        # Initialize YOLO model in memory exactly once when the server starts
+        self.inference_pipeline = InferencePipeline("yolo11n.torchscript")
+
+clApp = ClientApp()
 
 @app.route("/")
 def home():
     return render_template('index.html')
 
-
-
-
 @app.route("/predict", methods=['POST','GET'])
 @cross_origin()
 def predictRoute():
-    try:
-        image = request.json['image']
-        decodeImage(image, clApp.filename)
-
-        os.system("cd yolov5/ && python detect.py --weights best.pt --img 416 --conf 0.5 --source ../data/inputImage.jpg")
-
-        opencodedbase64 = encodeImageIntoBase64("yolov5/runs/detect/exp/inputImage.jpg")
-        result = {"image": opencodedbase64.decode('utf-8')}
-        os.system("rm -rf yolov5/runs")
-
-    except ValueError as val:
-        print(val)
-        return Response("Value not found inside  json data")
-    except KeyError:
-        return Response("Key value error incorrect key passed")
-    except Exception as e:
-        print(e)
-        result = "Invalid input"
-
+    # Get base64 encoded image string from JSON payload
+    data = request.get_json(force=True)
+    if 'image' not in data:
+        raise KeyError("image key missing in JSON")
+    image_b64 = data['image']
+    
+    # Run inference directly in memory without saving to disk
+    predicted_image_b64 = clApp.inference_pipeline.predict(image_b64)
+    
+    result = {"image": predicted_image_b64}
     return jsonify(result)
-
-
-
 
 @app.route("/live", methods=['GET'])
 @cross_origin()
 def predictLive():
-    try:
-        os.system("cd yolov5/ && python detect.py --weights best.pt --img 416 --conf 0.5 --source 0")
-        os.system("rm -rf yolov5/runs")
-        return "Camera starting!!" 
-
-    except ValueError as val:
-        print(val)
-        return Response("Value not found inside  json data")
-    
-
-    
-
+    return Response(
+        "Live webcam inference via OS GUI (cv2.imshow) is deprecated for the HTTP API.", 
+        status=501
+    )
 
 if __name__ == "__main__":
     clApp = ClientApp()

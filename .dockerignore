@@ -1,1 +1,13 @@
 demo.excalidraw
+venv/
+__pycache__/
+yolov5_internal/
+notebook/
+*.pt
+*.onnx
+*.onnx.data
+*.egg-info/
+test_inference.py
+fix_metadata.py
+fix_onnx.py
+export_v5_v8.py
