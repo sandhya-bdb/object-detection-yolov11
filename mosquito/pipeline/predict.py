@@ -5,7 +5,7 @@ from PIL import Image
 import io
 
 class InferencePipeline:
-    def __init__(self, model_path="yolo11n.torchscript"):
+    def __init__(self, model_path="models/yolo11n.torchscript"):
         """
         Initializes the YOLO model in memory.
         Args:

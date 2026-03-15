@@ -9,7 +9,7 @@ CORS(app)
 class ClientApp:
     def __init__(self):
         # Initialize YOLO model in memory exactly once when the server starts
-        self.inference_pipeline = InferencePipeline("yolo11n.torchscript")
+        self.inference_pipeline = InferencePipeline("models/yolo11n.torchscript")
 
 clApp = ClientApp()
 

@@ -33,9 +33,9 @@ This project was originally built around a custom `YOLOv5` implementation but ha
 ├── mosquito/                  # Core library module
 │   └── pipeline/
 │       └── predict.py         # Handles loading the YOLO model and running predictions
-├── test_api.py                # Script to quickly test the running HTTP API via POST request
-├── test_inference.py          # Script to quickly verify local model inference directly
-├── yolo11n.torchscript        # Serialized YOLO11 model weights used by the application
+├── models/                    # Stores trained model weights (.pt, .onnx, .torchscript)
+├── scripts/                   # Utility scripts for training, export, and fixes
+├── tests/                     # Scripts to test local inference and the HTTP API
 ├── requirements.txt           # Python dependencies and locked versions
 └── Dockerfile                 # Container configuration for production deployment
 ```
@@ -79,7 +79,7 @@ You have two ways to interact with the detection system locally before deploying
 This script generates a dummy test image in-memory and runs the `predict.py` pipeline directly. This is extremely useful for verifying your TorchScript model loads correctly without standing up the HTTP server.
 
 ```bash
-python test_inference.py
+python tests/test_inference.py
 ```
 
 *Expected Output*: You should see pipeline initialization messages followed by a success confirmation indicating the length of the returned base64 image string.
@@ -96,7 +96,7 @@ To test the full API workflow as a client would experience it:
 
 2. **Run the API Client** in a secondary terminal:
    ```bash
-   python test_api.py
+   python tests/test_api.py
    ```
    *This script converts a dummy red test image to Base64, sends an HTTP POST request to `http://127.0.0.1:8080/predict`, and measures both the status code and API response time.*
 

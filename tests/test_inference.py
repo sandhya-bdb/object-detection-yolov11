@@ -5,7 +5,7 @@ from mosquito.pipeline.predict import InferencePipeline
 import traceback
 
 print("Initializing pipeline...")
-pipeline = InferencePipeline("yolo11n.torchscript")
+pipeline = InferencePipeline("models/yolo11n.torchscript")
 
 print("Generating dummy image...")
 img = Image.new('RGB', (416, 416), color = 'red')
